@@ -28,6 +28,11 @@ const Header = () => {
       label: 'Rewards',
       path: '/rewards-shop',
       icon: 'Gift'
+    },
+    {
+      label: 'Feedback',
+      path: '/feedback',
+      icon: 'MessageSquare'
     }
   ];
 

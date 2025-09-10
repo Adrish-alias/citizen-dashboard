@@ -22,6 +22,7 @@ const Routes = () => {
         <Route path="/notifications-center" element={<NotificationsCenter />} />
         <Route path="/training-modules" element={<TrainingModules />} />
         <Route path="/report-waste-issues" element={<ReportWasteIssues />} />
+        <Route path="/feedback" element={<DashboardOverview />} />
         <Route path="*" element={<NotFound />} />
       </RouterRoutes>
       </ErrorBoundary>
