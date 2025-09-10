@@ -4,7 +4,6 @@ import Header from '../../components/ui/Header';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import PointsBalance from './components/PointsBalance';
-import FeaturedItems from './components/FeaturedItems';
 import CategoryFilter from './components/CategoryFilter';
 import SortOptions from './components/SortOptions';
 import RewardCard from './components/RewardCard';
@@ -30,37 +29,6 @@ const RewardsShop = () => {
     { id: 'experiences', name: 'Experiences', icon: 'MapPin' },
     { id: 'electronics', name: 'Electronics', icon: 'Smartphone' },
     { id: 'home', name: 'Home & Garden', icon: 'Home' }
-  ];
-
-  // Mock featured items
-  const featuredItems = [
-    {
-      id: 'featured-1',
-      name: 'Premium Bamboo Water Bottle Set',
-      description: `Complete eco-friendly hydration solution with insulated bamboo bottle, cleaning brush, and organic cotton carrying case.\n\nFeatures temperature retention for 12+ hours and sustainable bamboo construction.`,
-      image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=800&h=600&fit=crop',
-      points: 1200,
-      originalPoints: 1500,
-      available: true,
-      stock: 15,
-      badge: '20% Off',
-      sustainability: true,
-      requiresAddress: true
-    },
-    {
-      id: 'featured-2',
-      name: 'Smart Home Energy Monitor',
-      description: `Advanced energy monitoring system that tracks your home's power consumption in real-time.\n\nHelps reduce energy bills by up to 30% through intelligent usage insights and automated recommendations.`,image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop',points: 2500,available: true,stock: 8,badge: 'New Arrival',
-      sustainability: true,
-      requiresAddress: true
-    },
-    {
-      id: 'featured-3',name: 'Community Garden Experience',
-      description: `Join our weekend community gardening program and learn sustainable growing techniques.\n\nIncludes seeds, tools, and expert guidance for growing your own organic vegetables.`,
-      image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=600&fit=crop',points: 800,available: true,stock: 25,badge: 'Popular',
-      sustainability: true,
-      requiresAddress: false
-    }
   ];
 
   // Mock reward items
@@ -319,15 +287,6 @@ const RewardsShop = () => {
 
         {/* Points Balance */}
         <PointsBalance points={availablePoints} className="mb-8" />
-
-        {/* Featured Items */}
-        <div className="mb-8">
-          <FeaturedItems 
-            items={featuredItems}
-            onRedeem={handleRedeem}
-            userPoints={availablePoints}
-          />
-        </div>
 
         {/* Show History or Shop */}
         {showHistory ? (

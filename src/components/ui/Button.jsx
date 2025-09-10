@@ -79,8 +79,8 @@ const Button = React.forwardRef(({
                     name={iconName}
                     size={calculatedIconSize}
                     className={cn(
-                        children && iconPosition === 'left' && "mr-2",
-                        children && iconPosition === 'right' && "ml-2"
+                        children && iconPosition === 'left' && "md:mr-2",
+                        children && iconPosition === 'right' && "md:ml-2"
                     )}
                 />
             );
@@ -99,10 +99,12 @@ const Button = React.forwardRef(({
             disabled={disabled || loading}
             {...props}
         >
-            {loading && <LoadingSpinner />}
-            {iconName && iconPosition === 'left' && renderIcon()}
-            {children}
-            {iconName && iconPosition === 'right' && renderIcon()}
+            <span className="inline-flex items-center justify-center gap-2">
+                {loading && <LoadingSpinner />}{" "}
+                {iconName && iconPosition === 'left' && renderIcon()}{" "}
+                {children}{" "}
+                {iconName && iconPosition === 'right' && renderIcon()}
+            </span>
         </button>
     );
 
@@ -153,10 +155,12 @@ const Button = React.forwardRef(({
             disabled={disabled || loading}
             {...props}
         >
-            {loading && <LoadingSpinner />}
-            {iconName && iconPosition === 'left' && renderIcon()}
-            {children}
-            {iconName && iconPosition === 'right' && renderIcon()}
+            <span className="inline-flex items-center justify-center gap-2">
+                {loading && <LoadingSpinner />}{" "}
+                {iconName && iconPosition === 'left' && renderIcon()}{" "}
+                {children}{" "}
+                {iconName && iconPosition === 'right' && renderIcon()}
+            </span>
         </Comp>
     );
 });
