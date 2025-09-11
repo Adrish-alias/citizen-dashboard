@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import Header from '../../components/ui/Header';
 import ReportForm from './components/ReportForm';
@@ -7,24 +7,115 @@ import QuickStats from './components/QuickStats';
 import EmergencyContact from './components/EmergencyContact';
 import Icon from '../../components/AppIcon';
 
+const initialReports = [
+  {
+    id: 'RPT-2025-001',
+    issueType: 'uncollected',
+    title: 'Uncollected Trash',
+    location: '123 Oak Street, Downtown',
+    description: 'Garbage bins have not been collected for over a week. Strong odor and attracting pests.',
+    status: 'in_progress',
+    priority: 'high',
+    submittedDate: '2025-01-05',
+    lastUpdate: '2025-01-06',
+    photos: 2,
+    assignedTo: 'Waste Management Team A'
+  },
+  {
+    id: 'RPT-2025-002',
+    issueType: 'illegal_dumping',
+    title: 'Illegal Dumping',
+    location: 'Behind City Mall, Parking Lot C',
+    description: 'Large furniture items and construction debris dumped illegally. Blocking pedestrian access.',
+    status: 'resolved',
+    priority: 'medium',
+    submittedDate: '2025-01-03',
+    lastUpdate: '2025-01-04',
+    photos: 3,
+    assignedTo: 'Environmental Enforcement'
+  },
+  {
+    id: 'RPT-2025-003',
+    issueType: 'damaged_bins',
+    title: 'Damaged Bins',
+    location: 'Pine Avenue & 5th Street',
+    description: 'Recycling bin has a large crack and lid is missing. Contents spilling onto sidewalk.',
+    status: 'submitted',
+    priority: 'low',
+    submittedDate: '2025-01-08',
+    lastUpdate: '2025-01-08',
+    photos: 1,
+    assignedTo: 'Pending Assignment'
+  },
+  {
+    id: 'RPT-2025-004',
+    issueType: 'uncollected',
+    title: 'Uncollected Trash',
+    location: '456 Elm Street, Residential Area',
+    description: 'Missed collection on scheduled pickup day. Multiple households affected in the block.',
+    status: 'in_progress',
+    priority: 'medium',
+    submittedDate: '2025-01-07',
+    lastUpdate: '2025-01-08',
+    photos: 0,
+    assignedTo: 'Route Supervisor'
+  },
+  {
+    id: 'RPT-2025-005',
+    issueType: 'illegal_dumping',
+    title: 'Illegal Dumping',
+    location: 'Green Park Trail, Mile Marker 2',
+    description: 'Electronic waste and old appliances dumped in natural area. Environmental concern.',
+    status: 'resolved',
+    priority: 'high',
+    submittedDate: '2025-01-02',
+    lastUpdate: '2025-01-03',
+    photos: 4,
+    assignedTo: 'Park Services'
+  }
+];
+
 const ReportWasteIssues = () => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [lastSubmittedReport, setLastSubmittedReport] = useState(null);
 
+  const [reports, setReports] = useState(() => {
+    const savedReports = localStorage.getItem('greentrack_reports');
+    return savedReports ? JSON.parse(savedReports) : initialReports;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('greentrack_reports', JSON.stringify(reports));
+  }, [reports]);
+
   const handleReportSubmit = (reportData) => {
-    // Simulate successful submission
+    const priorityMap = {
+      uncollected: 'medium',
+      illegal_dumping: 'high',
+      damaged_bins: 'low'
+    };
+    const priority = priorityMap[reportData.issueType] || 'medium';
+
     const newReport = {
-      id: `RPT-${new Date()?.getFullYear()}-${String(Math.floor(Math.random() * 1000))?.padStart(3, '0')}`,
+      id: `RPT-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
       ...reportData,
+      priority: priority,
       status: 'submitted',
-      submittedDate: new Date()?.toISOString()?.split('T')?.[0],
-      lastUpdate: new Date()?.toISOString()?.split('T')?.[0]
+      submittedDate: new Date().toISOString().split('T')[0],
+      lastUpdate: new Date().toISOString().split('T')[0]
     };
 
     setLastSubmittedReport(newReport);
     setShowSuccessMessage(true);
 
-    // Hide success message after 5 seconds
+    // **MODIFICATION START**
+    // This new logic ensures the list is always capped at 5 items.
+    setReports(prevReports => {
+      const updatedReports = [newReport, ...prevReports];
+      return updatedReports.slice(0, 5);
+    });
+    // **MODIFICATION END**
+
     setTimeout(() => {
       setShowSuccessMessage(false);
     }, 5000);
@@ -97,7 +188,7 @@ const ReportWasteIssues = () => {
             <ReportForm onSubmit={handleReportSubmit} />
 
             {/* Recent Reports */}
-            <RecentReports />
+            <RecentReports reports={reports} />
           </div>
 
           {/* Sidebar */}
@@ -116,7 +207,6 @@ const ReportWasteIssues = () => {
                   <p className="text-sm text-muted-foreground">Best practices for effective reporting</p>
                 </div>
               </div>
-
               <div className="space-y-4 text-sm">
                 <div className="flex items-start space-x-3">
                   <Icon name="Camera" size={16} className="text-primary mt-0.5" />
@@ -125,7 +215,6 @@ const ReportWasteIssues = () => {
                     <p className="text-muted-foreground">Clear images help our team understand and prioritize issues</p>
                   </div>
                 </div>
-
                 <div className="flex items-start space-x-3">
                   <Icon name="MapPin" size={16} className="text-primary mt-0.5" />
                   <div>
@@ -133,7 +222,6 @@ const ReportWasteIssues = () => {
                     <p className="text-muted-foreground">Provide exact addresses or use GPS coordinates</p>
                   </div>
                 </div>
-
                 <div className="flex items-start space-x-3">
                   <Icon name="FileText" size={16} className="text-primary mt-0.5" />
                   <div>
@@ -141,7 +229,6 @@ const ReportWasteIssues = () => {
                     <p className="text-muted-foreground">Include relevant details like size, duration, and impact</p>
                   </div>
                 </div>
-
                 <div className="flex items-start space-x-3">
                   <Icon name="Clock" size={16} className="text-primary mt-0.5" />
                   <div>
