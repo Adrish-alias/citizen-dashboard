@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/ui/Header';
 import MetricCard from './components/MetricCard';
@@ -19,27 +19,37 @@ const DashboardOverview = () => {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [recentFeedbacks, setRecentFeedbacks] = useState([]); // New state for recent feedbacks
-  const [feedbackFilter, setFeedbackFilter] = useState('All'); // New state for feedback filter
+  const [recentFeedbacks, setRecentFeedbacks] = useState([]);
+  const [feedbackFilter, setFeedbackFilter] = useState('All');
+
+  // Load feedbacks from localStorage on mount
+  useEffect(() => {
+    const storedFeedbacks = localStorage.getItem('recentFeedbacks');
+    if (storedFeedbacks) {
+      setRecentFeedbacks(JSON.parse(storedFeedbacks));
+    }
+  }, []);
+
+  // Save feedbacks to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('recentFeedbacks', JSON.stringify(recentFeedbacks));
+  }, [recentFeedbacks]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const newFeedback = {
-      id: Date.now(), // Unique ID for the feedback
+      id: Date.now(),
       type: feedbackType,
       subject,
       message,
       timestamp: new Date().toISOString(),
     };
-    setRecentFeedbacks((prevFeedbacks) => [newFeedback, ...prevFeedbacks].slice(0, 5));
-    console.log('Feedback Submitted:', newFeedback);
-    // Here you would typically send this data to an API
-    // For now, we'll just clear the form and show a success message
+    const updatedFeedbacks = [newFeedback, ...recentFeedbacks].slice(0, 5);
+    setRecentFeedbacks(updatedFeedbacks);
     setFeedbackType('Suggestion');
     setSubject('');
     setMessage('');
     setIsSubmitted(true);
-    // Optionally, hide the success message after a few seconds
     setTimeout(() => setIsSubmitted(false), 5000);
   };
 
@@ -173,91 +183,90 @@ const DashboardOverview = () => {
                 <div>
                   <label htmlFor="feedbackType" className="block text-sm font-medium text-foreground mb-1">Type of Feedback</label>
                   <select
-                  id="feedbackType"
-                  className="w-full p-2 border border-border rounded-md bg-input text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                  value={feedbackType}
-                  onChange={(e) => setFeedbackType(e.target.value)}
+                    id="feedbackType"
+                    className="w-full p-2 border border-border rounded-md bg-input text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                    value={feedbackType}
+                    onChange={(e) => setFeedbackType(e.target.value)}
+                  >
+                    <option>Suggestion</option>
+                    <option>Bug Report</option>
+                    <option>Feature Request</option>
+                    <option>Collection Issue</option>
+                    <option>Vehicle Complaint</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-1">Subject</label>
+                  <input
+                    type="text"
+                    id="subject"
+                    placeholder="Briefly describe your feedback"
+                    className="w-full p-2 border border-border rounded-md bg-input text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-foreground mb-1">Message</label>
+                  <textarea
+                    id="message"
+                    rows="5"
+                    placeholder="Provide detailed feedback here..."
+                    className="w-full p-2 border border-border rounded-md bg-input text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  ></textarea>
+                </div>
+                
+                <button
+                  type="submit"
+                  className="bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
                 >
-                  <option>Suggestion</option>
-                  <option>Bug Report</option>
-                  <option>Feature Request</option>
-                  <option>Collection Issue</option>
-                  <option>Vehicle Complaint</option>
-                  <option>Other</option>
+                  Submit Feedback
+                </button>
+              </form>
+            )}
+
+            {/* Recent Feedbacks Section */}
+            <div className="mt-8 pt-6 border-t border-border">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-foreground">Recent Feedbacks</h3>
+                <select
+                  value={feedbackFilter}
+                  onChange={(e) => setFeedbackFilter(e.target.value)}
+                  className="p-2 border border-border rounded-md bg-input text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value="All">All Types</option>
+                  <option value="Suggestion">Suggestion</option>
+                  <option value="Bug Report">Bug Report</option>
+                  <option value="Feature Request">Feature Request</option>
+                  <option value="Collection Issue">Collection Issue</option>
+                  <option value="Vehicle Complaint">Vehicle Complaint</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
-              
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-1">Subject</label>
-                <input
-                  type="text"
-                  id="subject"
-                  placeholder="Briefly describe your feedback"
-                  className="w-full p-2 border border-border rounded-md bg-input text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-foreground mb-1">Message</label>
-                <textarea
-                  id="message"
-                  rows="5"
-                  placeholder="Provide detailed feedback here..."
-                  className="w-full p-2 border border-border rounded-md bg-input text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                ></textarea>
-              </div>
-              
-              <button
-                type="submit"
-                className="bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
-              >
-                Submit Feedback
-              </button>
-            </form>
-          )}
 
-          {/* Recent Feedbacks Section */}
-          <div className="mt-8 pt-6 border-t border-border">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-foreground">Recent Feedbacks</h3>
-              <select
-                value={feedbackFilter}
-                onChange={(e) => setFeedbackFilter(e.target.value)}
-                className="p-2 border border-border rounded-md bg-input text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                <option value="All">All Types</option>
-                <option value="Suggestion">Suggestion</option>
-                <option value="Bug Report">Bug Report</option>
-                <option value="Feature Request">Feature Request</option>
-                <option value="Collection Issue">Collection Issue</option>
-                <option value="Vehicle Complaint">Vehicle Complaint</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-
-            {filteredFeedbacks.length === 0 ? (
-              <p className="text-muted-foreground">No recent feedbacks to display.</p>
-            ) : (
-              <div className="space-y-4">
-                {filteredFeedbacks.map((feedback) => (
-                  <div key={feedback.id} className="bg-muted/30 p-4 rounded-md border border-border">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-primary">{feedback.type}</span>
-                      <span className="text-xs text-muted-foreground">{new Date(feedback.timestamp).toLocaleString()}</span>
+              {filteredFeedbacks.length === 0 ? (
+                <p className="text-muted-foreground">No recent feedbacks to display.</p>
+              ) : (
+                <div className="space-y-4">
+                  {filteredFeedbacks.map((feedback) => (
+                    <div key={feedback.id} className="bg-muted/30 p-4 rounded-md border border-border">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-primary">{feedback.type}</span>
+                        <span className="text-xs text-muted-foreground">{new Date(feedback.timestamp).toLocaleString()}</span>
+                      </div>
+                      <h4 className="font-semibold text-foreground mb-1">{feedback.subject}</h4>
+                      <p className="text-sm text-muted-foreground">{feedback.message}</p>
                     </div>
-                    <h4 className="font-semibold text-foreground mb-1">{feedback.subject}</h4>
-                    <p className="text-sm text-muted-foreground">{feedback.message}</p>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-
-        </div>
         )}
 
         {/* Environmental Impact Summary */}
