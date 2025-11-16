@@ -1,6 +1,6 @@
-# React
+# SwachhSamadhan Citizen side dashboard
 
-A modern React-based project utilizing the latest frontend technologies and tools for building responsive web applications.
+A modern React-based dashboard for my SIH hackathon prototype utilizing the latest frontend technologies and tools for building a responsive web interface that provides users with several features like reporting wate issues, checking household waste collection records, providing feedback etc.
 
 ## 🚀 Features
 
